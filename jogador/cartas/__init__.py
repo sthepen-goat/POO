@@ -1,0 +1,1 @@
+from .cartas import Carta
