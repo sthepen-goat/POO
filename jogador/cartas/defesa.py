@@ -3,7 +3,7 @@ from cartas import Carta
 
 class CartaDefesa(Carta):
     def __init__(self):
-        bloqueio = random.randint(5, 15)
+        bloqueio = random.randint(1, 3)
         super().__init__("Carta de Defesa", f"Bloqueia {bloqueio} de dano.")
         self.bloqueio = bloqueio
 

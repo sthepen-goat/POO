@@ -3,7 +3,7 @@ from cartas import Carta
 
 class CartaAtaque(Carta):
     def __init__(self):
-        dano = random.randint(5, 15)  
+        dano = random.randint(1,3)  
         super().__init__("Carta de Ataque", f"Causa {dano} de dano ao oponente.")
         self.dano = dano
 
