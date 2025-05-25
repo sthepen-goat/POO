@@ -3,11 +3,31 @@ from cartas import Carta
 
 class CartaEspecial(Carta):
     def __init__(self):
-        self.dano = random.randint(1, 3)
-        self.cura = random.randint(1, 3)
-        super().__init__("Especial", f"Dano: {self.dano}, Cura: {self.cura}")
+        self.efeito = random.choice([ "silenciar", "espelhar", "embaralhar"])
+        descricao = {
+            "silenciar": "Impede o alvo de jogar carta no próximo turno.",
+            "espelhar": "Copia o efeito da última carta jogada pelo alvo.",
+            "embaralhar": "Troca todas as cartas do alvo por novas cartas."
+        }[self.efeito]
+
+        super().__init__("Carta Especial", descricao)
+        self.precisa_alvo = True
+
 
     def aplicar_efeito(self, jogador, oponente):
-        oponente.vida -= self.dano
-        jogador.vida += self.cura
-        print(f"{jogador.nome} causa {self.dano} de dano e cura {self.cura}.")
+        if self.efeito == "silenciar":
+            oponente.estado = "silenciado"
+            print(f"{oponente.nome} foi silenciado e não poderá usar cartas no próximo turno.")
+        elif self.efeito == "espelhar":
+            if hasattr(oponente, 'ultima_carta'):
+                carta = oponente.ultima_carta
+                carta.aplicar_efeito(jogador, oponente)
+                print(f"{jogador.nome} espelha o efeito da carta {carta.nome}.")
+            else:
+                print(f"{jogador.nome} tentou espelhar, mas {oponente.nome} ainda não jogou nenhuma carta.")
+        elif self.efeito == "embaralhar":
+            oponente.mao.clear()
+            for _ in range(7): 
+                oponente.comprar()
+            print(f"{oponente.nome} teve suas cartas trocadas.")
+

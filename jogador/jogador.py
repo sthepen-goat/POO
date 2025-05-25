@@ -5,7 +5,9 @@ class Jogador:
         self.nome = nome
         self.vida = 10
         self.mao = [comprar_carta() for _ in range(7)]  
-
+        self.estado = None 
+        self.ultima_carta = None  
+        
     def comprar(self):
         if len(self.mao) < 7:
             self.mao.append(comprar_carta())

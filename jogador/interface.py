@@ -8,8 +8,8 @@ class JogoInterface:
         self.root.title("Jogo de Cartas - PvP")
         self.jogadores = [Jogador(f"Jogador {i+1}") for i in range(num_jogadores)]
         self.indice_turno = 0
-        self.carta_pendente = None  
-        
+        self.carta_pendente = None
+
         self.label_info = tk.Label(root, text="", font=("Arial", 14))
         self.label_info.pack()
 
@@ -28,30 +28,46 @@ class JogoInterface:
         jogador = self.jogadores[self.indice_turno]
         self.label_info.config(text=f"Turno de {jogador.nome} | Vida: {jogador.vida}")
 
+        # Limpa a interface antiga
         for widget in self.frame_mao.winfo_children():
             widget.destroy()
-        for i, carta in enumerate(jogador.mao):
-         btn = tk.Button(
-         self.frame_mao,
-         text=f"{carta.nome}\n({carta.descricao})",
-         command=lambda i=i: self.jogar_carta(i),
-         width=20,
-         height=6,  
-         wraplength=140,  
-         font=("Arial", 10)
-         )
-         btn.pack(side=tk.LEFT, padx=5)
         for widget in self.frame_alvos.winfo_children():
             widget.destroy()
+        if jogador.estado == "silenciado":
+            print(f"{jogador.nome} está silenciado e não pode jogar neste turno.")
+            jogador.estado = None
+            self.jogadores[self.indice_turno].comprar()
+            self.proximo_turno()
+            return
+
+        # Mostra as cartas disponíveis
+        for i, carta in enumerate(jogador.mao):
+            btn = tk.Button(
+                self.frame_mao,
+                text=f"{carta.nome}\n({carta.descricao})",
+                command=lambda i=i: self.jogar_carta(i),
+                width=20,
+                height=6,
+                wraplength=140,
+                font=("Arial", 10)
+            )
+            btn.pack(side=tk.LEFT, padx=5)
 
     def jogar_carta(self, indice):
         jogador = self.jogadores[self.indice_turno]
         carta = jogador.mao.pop(indice)
+        jogador.ultima_carta = carta
 
-        if hasattr(carta, "dano"):
+        # Decide se é necessário alvo
+        precisa_de_alvo = getattr(carta, "precisa_alvo", False)
+
+        if precisa_de_alvo:
             self.carta_pendente = carta
             self.exibir_opcoes_de_alvo()
         else:
+            # Carta de efeito próprio (ex: armadura)
+            if hasattr(carta, "aplicar_efeito"):
+                carta.aplicar_efeito(jogador, jogador)
             jogador.comprar()
             self.proximo_turno()
 
@@ -61,21 +77,27 @@ class JogoInterface:
 
         for i, jogador in enumerate(self.jogadores):
             if i != self.indice_turno and jogador.vida > 0:
-                btn = tk.Button(self.frame_alvos, text=f"{jogador.nome} ({jogador.vida} vida)",
-                                command=lambda i=i: self.atacar_jogador(i))
+                btn = tk.Button(
+                    self.frame_alvos,
+                    text=f"{jogador.nome} ({jogador.vida} vida)",
+                    command=lambda i=i: self.atacar_jogador(i)
+                )
                 btn.pack(side=tk.LEFT, padx=5)
 
     def atacar_jogador(self, indice_alvo):
         carta = self.carta_pendente
+        jogador = self.jogadores[self.indice_turno]
         alvo = self.jogadores[indice_alvo]
-        alvo.vida -= carta.dano
-        if alvo.vida < 0:
-            alvo.vida = 0
+
+        if hasattr(carta, "aplicar_efeito"):
+            carta.aplicar_efeito(jogador, alvo)
+        elif hasattr(carta, "dano"):
+            alvo.vida -= carta.dano
+            if alvo.vida < 0:
+                alvo.vida = 0
 
         self.carta_pendente = None
-
-        # Após ataque, jogador compra nova carta
-        self.jogadores[self.indice_turno].comprar()
+        jogador.comprar()
         self.proximo_turno()
 
     def pular_turno(self):
@@ -86,11 +108,11 @@ class JogoInterface:
         if self.verificar_fim_de_jogo():
             return
 
-        # Avança para o próximo jogador vivo
         total = len(self.jogadores)
         for _ in range(total):
             self.indice_turno = (self.indice_turno + 1) % total
-            if self.jogadores[self.indice_turno].vida > 0:
+            jogador = self.jogadores[self.indice_turno]
+            if jogador.vida > 0:
                 break
 
         self.atualizar_interface()
