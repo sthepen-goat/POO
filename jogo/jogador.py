@@ -8,7 +8,8 @@ class Jogador:
         self.estado = None 
         self.ultima_carta = None  
         self.turnos_extras = 0 
-
+    
     def comprar(self):
-        if len(self.mao) < 7:
-            self.mao.append(comprar_carta())
+        nova_carta = comprar_carta()
+        self.mao.append(nova_carta)
+        print(f"{self.nome} comprou a carta: {nova_carta.nome}")
