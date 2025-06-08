@@ -70,13 +70,11 @@ class JogoInterface:
             if hasattr(carta, "aplicar_efeito"):
                 carta.aplicar_efeito(jogador, jogador)
 
-            if raio == 1:
-                jogador.turnos_extras += raio - 1
-                print(f"{jogador.nome} ganhou {raio - 1} turnos extras!")
-            
-            if raio == 2:
-                jogador.turnos_extras += raio -2
-                
+            if raio > 0:
+              jogador.turnos_extras += raio
+              print(f"{jogador.nome} jogará mais {raio} vez(es) após este turno.")
+
+
 
             jogador.comprar()
             self.proximo_turno()
@@ -108,9 +106,9 @@ class JogoInterface:
             if alvo.vida < 0:
                 alvo.vida = 0
 
-        if raio > 1:
-            jogador.turnos_extras += raio - 1
-            print(f"{jogador.nome} ganhou {raio - 1} turnos extras!")
+        if raio > 0:
+              jogador.turnos_extras += raio
+              print(f"{jogador.nome} jogará mais {raio} vez(es) após este turno.")
 
         self.carta_pendente = None
         jogador.comprar()
