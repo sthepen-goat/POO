@@ -9,6 +9,3 @@ class Carta(ABC):
     @abstractmethod
     def aplicar_efeito(self, jogador, oponente):
         pass
-
-    def __str__(self):
-        return f"{self.nome}: {self.descricao}"

@@ -1,5 +1,5 @@
 import tkinter as tk
-from jogador import Jogador
+from frontend.jogador import Jogador
 from cartas.comprar import comprar_carta
 
 class JogoInterface:
