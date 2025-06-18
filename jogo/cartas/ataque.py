@@ -8,7 +8,6 @@ class CartaAtaque(Carta):
         self.dano = dano
         self.precisa_alvo = True
 
-
     def aplicar_efeito(self, jogador, oponente):
         oponente.vida -= self.dano
         print(f"{jogador.nome} usa {self.nome} e causa {self.dano} de dano a {oponente.nome}.")

@@ -14,4 +14,3 @@ class CartaBloqueador(CartaDefesa):
             self.nome = "Bloqueio de ferrro"
             self.descrição = f"Bloqueia com o ferro {self.bloqueio}"
     
-

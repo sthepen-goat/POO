@@ -15,4 +15,3 @@ class CartaArmadura(CartaDefesa):
             self.nome = "Armadura de Ferro"
             self.descrição = f"Bloqueia com o ferro {self.bloqueio}"
         
-

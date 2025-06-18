@@ -1,12 +1,16 @@
 import tkinter as tk
+from tkinter import messagebox
 from frontend.jogador import Jogador
 from cartas.comprar import comprar_carta
+from services.database import Database
 
 class JogoInterface:
-    def __init__(self, root, num_jogadores=4):
+
+    def __init__(self, root, nomes_jogadores):
         self.root = root
         self.root.title("Jogo de Cartas - PvP")
-        self.jogadores = [Jogador(f"Jogador {i+1}") for i in range(num_jogadores)]
+        self.db = Database()
+        self.jogadores = [Jogador(nome) for nome in nomes_jogadores]
         for j in self.jogadores:
             j.jogo = self
             j.turnos_extras = 0  
@@ -137,11 +141,38 @@ class JogoInterface:
                 break
 
         self.atualizar_interface()
-
+   
     def verificar_fim_de_jogo(self):
         vivos = [j for j in self.jogadores if j.vida > 0]
         if len(vivos) == 1:
-            self.label_info.config(text=f"{vivos[0].nome} venceu!")
+            vencedor = vivos[0]
+            self.label_info.config(text=f"{vencedor.nome} venceu!")
             self.botao_avancar.config(state=tk.DISABLED)
+            cartas_restantes = len(vencedor.mao)
+            self.db.registrar_vitoria(vencedor.nome, vencedor.vida, cartas_restantes)
+            self.mostrar_ranking()
             return True
         return False
+
+    def mostrar_ranking(self):
+        ranking = self.db.obter_ranking()
+        
+        ranking_window = tk.Toplevel(self.root)
+        ranking_window.title("Ranking de Jogadores")
+        
+        tk.Label(ranking_window, text="Top 10 Jogadores", font=("Arial", 16)).pack(pady=10)
+
+        frame_header = tk.Frame(ranking_window)
+        frame_header.pack(fill=tk.X)
+        tk.Label(frame_header, text="Posição", width=10, anchor="w", font=("Arial", 10, "bold")).pack(side=tk.LEFT)
+        tk.Label(frame_header, text="Jogador", width=20, anchor="w", font=("Arial", 10, "bold")).pack(side=tk.LEFT)
+        tk.Label(frame_header, text="Vitórias", width=10, anchor="w", font=("Arial", 10, "bold")).pack(side=tk.LEFT)
+
+        for i, (nome, vitorias, ultima_vitoria) in enumerate(ranking, 1):
+            frame = tk.Frame(ranking_window)
+            frame.pack(fill=tk.X)
+            tk.Label(frame, text=f"{i}º", width=10, anchor="w").pack(side=tk.LEFT)
+            tk.Label(frame, text=nome, width=20, anchor="w").pack(side=tk.LEFT)
+            tk.Label(frame, text=vitorias, width=10, anchor="w").pack(side=tk.LEFT)
+        
+        tk.Button(ranking_window, text="Fechar", command=ranking_window.destroy).pack(pady=10)
