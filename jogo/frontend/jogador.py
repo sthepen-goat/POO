@@ -4,7 +4,7 @@ class Jogador:
     def __init__(self, nome):
         self.nome = nome
         self.vida = 10
-        self.mao = [comprar_carta() for _ in range(3)]
+        self.mao = [comprar_carta() for _ in range(7)]
         self.estado = None
         self.ultima_carta = None
         self.turnos_extras = 0
