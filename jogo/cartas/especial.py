@@ -9,7 +9,6 @@ class CartaEspecial(Carta):
             "embaralhar",
             "bola_de_fogo",
             "trocar_vida",
-            "descartar_tudo"
         ])
 
         descricao = {
@@ -18,7 +17,6 @@ class CartaEspecial(Carta):
             "embaralhar": "Troca todas as cartas do alvo por novas cartas.",
             "bola_de_fogo": "Causa 3 de dano a todos os jogadores.",
             "trocar_vida": "Troca sua vida com a do alvo.",
-            "descartar_tudo": "Todos os jogadores descartam toda a mão."
         }[self.efeito]
 
         super().__init__("Carta Especial", descricao)
@@ -53,8 +51,3 @@ class CartaEspecial(Carta):
         elif self.efeito == "trocar_vida":
             jogador.vida, oponente.vida = oponente.vida, jogador.vida
             print(f"{jogador.nome} trocou de vida com {oponente.nome}!")
-
-        elif self.efeito == "descartar_tudo":
-            for p in jogador.jogo.jogadores:
-                p.mao.clear()
-                print(f"{p.nome} descartou toda sua mão!")

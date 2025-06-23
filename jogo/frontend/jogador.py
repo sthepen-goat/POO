@@ -2,7 +2,7 @@ from cartas.comprar import comprar_carta
 
 class Jogador:
     def __init__(self, nome):
-        self.nome = nome
+        self.__nome = nome
         self.vida = 10
         self.mao = [comprar_carta() for _ in range(7)]
         self.estado = None
@@ -13,3 +13,7 @@ class Jogador:
         nova_carta = comprar_carta()
         self.mao.append(nova_carta)
         print(f"{self.nome} comprou a carta: {nova_carta.nome}")
+
+    @property
+    def nome(self):
+     return self.__nome
